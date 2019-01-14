@@ -85,7 +85,7 @@ namespace Vlingo.Actors.Plugin.Mailbox.AgronaMPSCArrayQueue
       
             if (disposing) {
                 
-                if (!queue.IsCompleted)
+                if (!queue.IsAddingCompleted)
                 {
                     Close();
                 }
