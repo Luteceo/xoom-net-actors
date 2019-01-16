@@ -39,17 +39,14 @@ namespace Vlingo.Actors.Plugin.Mailbox.AgronaMPSCArrayQueue
 
         public void Execute(IMailbox mailbox)
         {
-            if (!cancellationTokenSource.IsCancellationRequested)
-            {
-                cancellationTokenSource.Cancel();
-            }
+            cancellationTokenSource.Cancel();
         }
 
         public bool RequiresExecutionNotification { get; }
 
         public void Run()
         {
-            while (!IsClosed && !cancellationTokenSource.IsCancellationRequested)
+            while (!IsClosed)
             {
                 if (!Deliver())
                 {

@@ -33,10 +33,7 @@ namespace Vlingo.Actors.Plugin.Mailbox.SharedRingBuffer
 
         public void Execute(IMailbox mailbox)
         {
-            if (!cancellationTokenSource.IsCancellationRequested)
-            {
-                cancellationTokenSource.Cancel();
-            }
+            cancellationTokenSource.Cancel();
         }
 
         public void Start()
@@ -51,7 +48,7 @@ namespace Vlingo.Actors.Plugin.Mailbox.SharedRingBuffer
 
         public void Run()
         {
-            while (!closed.Get() && !cancellationTokenSource.IsCancellationRequested)
+            while (!closed.Get())
             {
                 if (!Deliver())
                 {
