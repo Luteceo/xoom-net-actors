@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using Vlingo.Common;
 
 namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
@@ -18,6 +19,7 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
         private readonly Action<IRunnable> rejectionHandler;
         private readonly ConcurrentQueue<IRunnable> queue;
         private readonly AtomicBoolean isShuttingDown;
+        private readonly CancellationTokenSource cts;
 
         public ThreadPoolExecutor(int maxConcurrentThreads, Action<IRunnable> rejectionHandler)
         {
@@ -25,6 +27,7 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
             this.rejectionHandler = rejectionHandler;
             queue = new ConcurrentQueue<IRunnable>();
             isShuttingDown = new AtomicBoolean(false);
+            cts = new CancellationTokenSource();
         }
 
         public void Execute(IRunnable task)
@@ -42,19 +45,20 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
         public void Shutdown()
         {
             isShuttingDown.Set(true);
+            cts.Cancel();
         }
 
         private void TryStartExecution()
         {
             if (!queue.IsEmpty && TryIncreaseRunningThreadCount())
             {
-                ThreadPool.QueueUserWorkItem(new WaitCallback(_ => ThreadStartMethod()));
+                Task.Run(() => ThreadStartMethod(), cts.Token);
             }
         }
 
         private void ThreadStartMethod()
         {
-            if(queue.TryDequeue(out IRunnable task))
+            if (queue.TryDequeue(out IRunnable task) && !cts.IsCancellationRequested)
             {
                 try
                 {
@@ -68,24 +72,24 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
             }
         }
 
-        private int _currentThreadCount = 0;
+        private int currentThreadCount;
         private bool TryIncreaseRunningThreadCount()
         {
-            int currentCountLocal = Interlocked.CompareExchange(ref _currentThreadCount, 0, 0);
+            int currentCountLocal = Interlocked.CompareExchange(ref currentThreadCount, 0, 0);
             while (currentCountLocal < maxConcurrentThreads)
             {
-                var valueAtTheTimeOfIncrement = Interlocked.CompareExchange(ref _currentThreadCount, currentCountLocal + 1, currentCountLocal);
+                var valueAtTheTimeOfIncrement = Interlocked.CompareExchange(ref currentThreadCount, currentCountLocal + 1, currentCountLocal);
                 if (valueAtTheTimeOfIncrement == currentCountLocal)
                 {
                     return true;
                 }
 
-                currentCountLocal = Interlocked.CompareExchange(ref _currentThreadCount, 0, 0);
+                currentCountLocal = Interlocked.CompareExchange(ref currentThreadCount, 0, 0);
             }
 
             return false;
         }
 
-        private void DecreaseRunningThreadCount() => Interlocked.Decrement(ref _currentThreadCount);
+        private void DecreaseRunningThreadCount() => Interlocked.Decrement(ref currentThreadCount);
     }
 }
