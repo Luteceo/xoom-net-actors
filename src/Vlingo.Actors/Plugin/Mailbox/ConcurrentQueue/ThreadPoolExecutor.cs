@@ -19,7 +19,6 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
         private readonly Action<IRunnable> rejectionHandler;
         private readonly ConcurrentQueue<IRunnable> queue;
         private readonly AtomicBoolean isShuttingDown;
-        private readonly CancellationTokenSource cts;
 
         public ThreadPoolExecutor(int maxConcurrentThreads, Action<IRunnable> rejectionHandler)
         {
@@ -27,7 +26,6 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
             this.rejectionHandler = rejectionHandler;
             queue = new ConcurrentQueue<IRunnable>();
             isShuttingDown = new AtomicBoolean(false);
-            cts = new CancellationTokenSource();
         }
 
         public void Execute(IRunnable task)
@@ -45,20 +43,19 @@ namespace Vlingo.Actors.Plugin.Mailbox.ConcurrentQueue
         public void Shutdown()
         {
             isShuttingDown.Set(true);
-            cts.Cancel();
         }
 
         private void TryStartExecution()
         {
             if (!queue.IsEmpty && TryIncreaseRunningThreadCount())
             {
-                Task.Run(() => ThreadStartMethod(), cts.Token);
+                Task.Run(() => ThreadStartMethod());
             }
         }
 
         private void ThreadStartMethod()
         {
-            if (queue.TryDequeue(out IRunnable task) && !cts.IsCancellationRequested)
+            if (queue.TryDequeue(out IRunnable task))
             {
                 try
                 {
