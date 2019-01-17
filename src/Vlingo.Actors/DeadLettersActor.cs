@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Vlingo.Actors
 {
-    public sealed class DeadLettersActor : Actor, IDeadLetters
+    public class DeadLettersActor : Actor, IDeadLetters
     {
         private readonly IList<IDeadLettersListener> listeners;
 
@@ -20,7 +20,7 @@ namespace Vlingo.Actors
             Stage.World.DeadLetters = SelfAs<IDeadLetters>();
         }
 
-        public void FailedDelivery(DeadLetter deadLetter)
+        public virtual void FailedDelivery(DeadLetter deadLetter)
         {
             Logger.Log(deadLetter.ToString());
 
@@ -38,7 +38,7 @@ namespace Vlingo.Actors
             }
         }
 
-        public void RegisterListener(IDeadLettersListener listener)
+        public virtual void RegisterListener(IDeadLettersListener listener)
         {
             listeners.Add(listener);
         }

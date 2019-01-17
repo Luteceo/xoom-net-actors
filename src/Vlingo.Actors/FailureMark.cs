@@ -9,7 +9,7 @@ using System;
 
 namespace Vlingo.Actors
 {
-    public sealed class FailureMark
+    public class FailureMark
     {
         private static readonly DateTime Since1970 = new DateTime(1970, 1, 1);
         private long startOfPeriod;
@@ -20,7 +20,7 @@ namespace Vlingo.Actors
             Reset();
         }
 
-        internal bool FailedWithExcessiveFailures(long period, int intensity)
+        protected internal virtual bool FailedWithExcessiveFailures(long period, int intensity)
         {
             if (intensity == SupervisionStrategyConstants.ForeverIntensity)
             {
@@ -49,8 +49,7 @@ namespace Vlingo.Actors
             {
                 return true;
             }
-
-            if (periodExceeded)
+            else if (periodExceeded)
             {
                 Reset();
                 return FailedWithExcessiveFailures(period, intensity);
@@ -59,7 +58,7 @@ namespace Vlingo.Actors
             return false;
         }
 
-        private void Reset()
+        protected internal virtual void Reset()
         {
             startOfPeriod = 0;
             timedIntensity = 0;

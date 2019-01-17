@@ -6,6 +6,8 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using Vlingo.Actors.Plugin.Logging.Console;
+using Vlingo.Actors.Plugin.Logging.NoOp;
 
 namespace Vlingo.Actors
 {
@@ -16,5 +18,12 @@ namespace Vlingo.Actors
         void Log(string message);
         void Log(string message, Exception ex);
         void Close();
+    }
+
+    public static class Logger
+    {
+        public static ILogger NoOpLogger() => new NoOpLogger();
+
+        public static ILogger TestLogger() => ConsoleLogger.TestInstance();
     }
 }

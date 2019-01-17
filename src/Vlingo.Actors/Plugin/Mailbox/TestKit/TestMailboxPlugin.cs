@@ -7,7 +7,7 @@
 
 namespace Vlingo.Actors.Plugin.Mailbox.TestKit
 {
-    public sealed class TestMailboxPlugin : AbstractPlugin, IMailboxProvider
+    public class TestMailboxPlugin : AbstractPlugin, IMailboxProvider
     {
         public TestMailboxPlugin(IRegistrar registrar)
         {

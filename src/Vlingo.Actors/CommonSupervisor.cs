@@ -9,5 +9,6 @@ namespace Vlingo.Actors
 {
     internal abstract class CommonSupervisor : DefaultSupervisor
     {
+        internal CommonSupervisor() { }
     }
 }

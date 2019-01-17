@@ -10,7 +10,7 @@ using static Vlingo.Actors.SupervisionStrategyConstants;
 
 namespace Vlingo.Actors
 {
-    public sealed class PublicRootActor : Actor, ISupervisor
+    public class PublicRootActor : Actor, IStoppable, ISupervisor
     {
         public PublicRootActor()
         {

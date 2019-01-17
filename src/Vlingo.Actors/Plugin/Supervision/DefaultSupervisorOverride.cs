@@ -9,9 +9,9 @@ using System;
 
 namespace Vlingo.Actors.Plugin.Supervision
 {
-    public sealed class DefaultSupervisorOverride : Actor, ISupervisor
+    public class DefaultSupervisorOverride : Actor, ISupervisor
     {
-        public ISupervisionStrategy SupervisionStrategy { get; } = new DefaultSupervisorOvverideSupervisionStrategy();
+        public ISupervisionStrategy SupervisionStrategy { get; } = new DefaultSupervisorOvveride_SupervisionStrategy();
 
         public ISupervisor Supervisor { get; private set; }
 
@@ -26,7 +26,7 @@ namespace Vlingo.Actors.Plugin.Supervision
             supervised.Resume();
         }
 
-        private class DefaultSupervisorOvverideSupervisionStrategy : ISupervisionStrategy
+        private class DefaultSupervisorOvveride_SupervisionStrategy : ISupervisionStrategy
         {
             public int Intensity => SupervisionStrategyConstants.ForeverIntensity;
 

@@ -67,7 +67,6 @@ namespace Vlingo.Actors.TestKit
                 }
                 catch (Exception)
                 {
-                    // ignored
                 }
 
                 if (countDownEvent.IsSet)

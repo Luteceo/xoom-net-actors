@@ -1,11 +1,4 @@
-﻿// Copyright (c) 2012-2018 Vaughn Vernon. All rights reserved.
-//
-// This Source Code Form is subject to the terms of the
-// Mozilla Public License, v. 2.0. If a copy of the MPL
-// was not distributed with this file, You can obtain
-// one at https://mozilla.org/MPL/2.0/.
-
-using System;
+﻿using System;
 using Vlingo.Common.Compiler;
 
 namespace Vlingo.Actors.Plugin.Supervision
@@ -59,7 +52,7 @@ namespace Vlingo.Actors.Plugin.Supervision
 
         public override bool Equals(object other)
         {
-            if (other == null || other.GetType() != GetType())
+            if (other == null || other.GetType() != this.GetType())
             {
                 return false;
             }

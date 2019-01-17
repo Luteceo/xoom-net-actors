@@ -36,9 +36,9 @@ namespace Vlingo.Actors.Plugin.Mailbox.AgronaMPSCArrayQueue
 
         public IMailbox ProvideMailboxFor(int hashCode, IDispatcher dispatcher)
         {
-            ManyToOneConcurrentArrayQueueDispatcher maybeDispatcher;
+            ManyToOneConcurrentArrayQueueDispatcher maybeDispatcher = null;
 
-            if (dispatcher != null)
+            if(dispatcher != null)
             {
                 maybeDispatcher = (ManyToOneConcurrentArrayQueueDispatcher)dispatcher;
             }
@@ -56,9 +56,16 @@ namespace Vlingo.Actors.Plugin.Mailbox.AgronaMPSCArrayQueue
                     configuration.SendRetires);
 
                 var otherDispatcher = dispatchers.GetOrAdd(hashCode, newDispatcher);
-                
-                otherDispatcher.Start();
-                return otherDispatcher.Mailbox;
+                if (otherDispatcher != null)
+                {
+                    otherDispatcher.Start();
+                    return otherDispatcher.Mailbox;
+                }
+                else
+                {
+                    newDispatcher.Start();
+                    return newDispatcher.Mailbox;
+                }
             }
             return maybeDispatcher.Mailbox;
         }

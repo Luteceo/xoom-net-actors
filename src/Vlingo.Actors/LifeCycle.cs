@@ -11,6 +11,7 @@ namespace Vlingo.Actors
 {
     internal sealed class LifeCycle
     {
+
         internal Environment Environment { get; set; }
 
         internal LifeCycle(Environment environment)

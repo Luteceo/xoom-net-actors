@@ -6,6 +6,8 @@
 // one at https://mozilla.org/MPL/2.0/.
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using Vlingo.Common;
 
 namespace Vlingo.Actors.Plugin.Mailbox.SharedRingBuffer
@@ -70,8 +72,10 @@ namespace Vlingo.Actors.Plugin.Mailbox.SharedRingBuffer
                     {
                         return;
                     }
-
-                    retries = 0;
+                    else
+                    {
+                        retries = 0;
+                    }
                 }
             }
 

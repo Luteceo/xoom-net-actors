@@ -39,7 +39,7 @@ namespace Vlingo.Actors.Plugin.Mailbox.SharedRingBuffer
 
         public IMailbox ProvideMailboxFor(int hashCode, IDispatcher dispatcher)
         {
-            RingBufferDispatcher maybeDispatcher;
+            RingBufferDispatcher maybeDispatcher = null;
 
             if (dispatcher != null)
             {
@@ -59,8 +59,16 @@ namespace Vlingo.Actors.Plugin.Mailbox.SharedRingBuffer
 
                 var otherDispatcher = dispatchers.GetOrAdd(hashCode, newDispatcher);
 
-                otherDispatcher.Start();
-                return otherDispatcher.Mailbox;
+                if (otherDispatcher != null)
+                {
+                    otherDispatcher.Start();
+                    return otherDispatcher.Mailbox;
+                }
+                else
+                {
+                    newDispatcher.Start();
+                    return newDispatcher.Mailbox;
+                }
             }
 
             return maybeDispatcher.Mailbox;
